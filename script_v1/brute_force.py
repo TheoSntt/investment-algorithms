@@ -1,3 +1,11 @@
+"""This scripts finds the correct solution to the best investment using brute force.
+It needs 2 arguments to be run :
+- in_file : The input file containing the shares to evaluate. If you downloaded the whole repository on GitHub,
+A correct value could be --in_file="../data/demo_dataset.csv"
+- out_file : The output file in which the selected shares will be written.
+An example value could be --out_file="../results/brute_force_result.csv"
+"""
+
 import csv
 import time
 import itertools
@@ -5,6 +13,8 @@ import argparse
 
 
 def make_list_from_csv(csv_file_path):
+    """This function takes the input CSV file containing the shares and converts it to an array containing
+    Python objects with names, prices and profits. The array is the input of the algorithm."""
     data = []
     with open(csv_file_path, 'r') as csvfile:
         reader = csv.reader(csvfile, delimiter=',')
@@ -20,6 +30,8 @@ def make_list_from_csv(csv_file_path):
 
 
 def create_csv_from_results(csv_file_path, best_combination, best_profit):
+    """This function is called on the results of the algorithm. It creates a CSV file containing the results :
+        the shares selected by the algorithm and the total price and profit obtained."""
     with open(csv_file_path, 'w', encoding='utf-8', newline='') as csv_file:
         # Creating the csv writer object and writing the header
         writer = csv.writer(csv_file, delimiter=',')
@@ -41,6 +53,9 @@ def create_csv_from_results(csv_file_path, best_combination, best_profit):
 
 
 def brute_force_find_best_investments(shares, money_cap):
+    """ Brute force algorithm to solve our investment problem : it iterates through all the possible combination of n
+    shares (2^n combinations) using intertools.combinations. It then tests whether it fits the money_cap, and
+    if it does, it calculates the total profit and store it if it is better than the previous best profit stored"""
     best_combination = []
     best_profit = 0
     it = 1
@@ -50,9 +65,9 @@ def brute_force_find_best_investments(shares, money_cap):
             it += 1
             total_price = sum(int(share['price']) for share in combination)
 
-            # Only consider combinations that do not exceed the money cap
+            # Test whether the combination exceeds the money cap
             if total_price <= money_cap:
-                total_profit = sum(int(share['price'])*int(share['profit'])/100 for share in combination)
+                total_profit = sum(share['price']*share['profit']/100 for share in combination)
 
                 # Update the best combination if this one is better
                 if total_profit > best_profit:
