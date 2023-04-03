@@ -39,11 +39,11 @@ python brute_force.py --in_file="../data/demo_dataset.csv" --out_file="results/b
 ```
 Pour le script de Dynamic programing, les arguments sont le fichier en entrée et le fichier en sortie, et le traitement des données négatives. Ainsi la commande peut être :
 ```		
-python dynamic_programing.py --in_file="../data/dataset1.csv" --out_file="results/dp_results.csv" --include_neg=True
+python dynamic_programing.py --in_file="../data/dataset1.csv" --out_file="results/dp_results.csv" --include_neg
 ```
 Pour le script de Greedy Algorithm, les arguments sont le fichier en entrée et le fichier en sortie, et le traitement des données négatives. Ainsi la commande peut être :
 ```		
-python greedy_algorithm.py --in_file="../data/dataset1.csv" --out_file="results/ga_results.csv" --include_neg=True
+python greedy_algorithm.py --in_file="../data/dataset1.csv" --out_file="results/ga_results.csv" --include_neg
 ```
 
 

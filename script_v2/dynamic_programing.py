@@ -29,8 +29,6 @@ def make_list_from_csv_multiply(csv_file_path, include_negative_numbers):
                 line_count += 1
             else:
                 line_count += 1
-                if line_count == 20:
-                    return data
                 if include_negative_numbers:
                     try:
                         price = abs(float(row[1]))
