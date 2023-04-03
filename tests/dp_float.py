@@ -1,6 +1,5 @@
 import csv
 import time
-import itertools
 
 
 def make_list_from_csv(csv_file_path):
@@ -12,7 +11,7 @@ def make_list_from_csv(csv_file_path):
             if line_count == 0:
                 line_count += 1
             else:
-                data.append({"name": row[0], "price": row[1], "profit": row[2]})
+                data.append({"name": row[0], "price": float(row[1].replace(",", ".")), "profit": float(row[2].replace(",", "."))})
                 line_count += 1
 
     return data
@@ -33,45 +32,36 @@ def create_csv_from_results(csv_file_path, best_combination, best_profit):
         writer.writerow(["Prix total :", sum(int(share['price']) for share in best_combination), "Profit total :", str(best_profit).replace(".", ",")])
 
 
-def find_best_investments(shares, max_price):
-    # results = []
-    best_combination = []
-    best_profit = 0
-    count = 0
+def knapsack_dp(items, capacity):
+    # Initialize dictionary
+    max_value = {(i, j): 0 for i in range(len(items)+1) for j in range(capacity+1)}
 
-    def backtrack(curr_shares, curr_price, start):
-        nonlocal best_combination
-        nonlocal best_profit
-        nonlocal count
-        count += 1
-        if curr_price > max_price:
-            return
-        # results.append(curr_shares)
-        total_profit = sum(int(share['price']) * int(share['profit']) / 100 for share in curr_shares)
-        if total_profit > best_profit:
-            best_combination = curr_shares
-            best_profit = total_profit
-        for i in range(start, len(shares)):
-            backtrack(curr_shares + [shares[i]], curr_price + int(shares[i]['price']), i+1)
-    backtrack([], 0, 0)
-    return best_combination, best_profit, count
+    # Iterate over items and weights
+    for i in range(1, len(items)+1):
+        for j in range(1, capacity+1):
+            # Compute maximum value
+            if items[i-1]['price'] <= j:
+                max_value[(i, j)] = max(max_value[(i-1, j)], max_value[(i-1, round(j-items[i-1]['price'], 2))] + items[i-1]['profit'])
+            else:
+                max_value[(i, j)] = max_value[(i-1, j)]
 
+    # Compute optimal value
+    optimal_value = max_value[(len(items), capacity)]
+
+    return optimal_value
 
 """Extracting the data from the CSV file into a Python list."""
-file_path = "../data/v1/dataset.csv"
+file_path = "./dataset_float.csv"
 shares = make_list_from_csv(file_path)
-shares = sorted(shares, key=lambda x: x['price'], reverse=True)
 
 """Calling the algorithm on the shares list."""
 start_time = time.time()
-max_profit_combination, max_profit, iterator = find_best_investments(shares, 500)
+max_profit, max_profit_combination = knapsack_dp(shares, 500)
 print("Analyse terminée. Temps d'exécution : {:.2f}s".format(time.time() - start_time))
-print(f"Nombre de combinaisons testées : {iterator}")
 print(f"La meilleure combinaison permet un bénéfice de {max_profit}")
 
 """Writing the results to a csv file"""
 max_profit_combination = sorted(max_profit_combination, key=lambda x: x['name'], reverse=False)
-outfile_path = "../results/v1/recursive.csv"
+outfile_path = "./dp.csv"
 create_csv_from_results(outfile_path, max_profit_combination, max_profit)
-
 

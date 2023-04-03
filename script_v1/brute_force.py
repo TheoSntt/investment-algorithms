@@ -1,6 +1,7 @@
 import csv
 import time
 import itertools
+import argparse
 
 
 def make_list_from_csv(csv_file_path):
@@ -12,7 +13,7 @@ def make_list_from_csv(csv_file_path):
             if line_count == 0:
                 line_count += 1
             else:
-                data.append({"name": row[0], "price": row[1], "profit": row[2]})
+                data.append({"name": row[0], "price": float(row[1]), "profit": float(row[2])})
                 line_count += 1
 
     return data
@@ -28,12 +29,18 @@ def create_csv_from_results(csv_file_path, best_combination, best_profit):
                    'profit (euros)']
         writer.writerow(en_tete)
         for share in best_combination:
-            row = [share['name'], share['price'], share['profit'], str(int(share['profit'])*int(share['price'])/100).replace(".", ",")]
+            row = [share['name'],
+                   share['price'],
+                   share['profit'],
+                   str(share['profit']*share['price']/100).replace(".", ",")]
             writer.writerow(row)
-        writer.writerow(["Prix total :", sum(int(share['price']) for share in best_combination), "Profit total :", str(best_profit).replace(".", ",")])
+        writer.writerow(["Prix total :",
+                         sum(share['price'] for share in best_combination),
+                         "Profit total :",
+                         str(best_profit).replace(".", ",")])
 
 
-def find_best_investments(shares, money_cap):
+def brute_force_find_best_investments(shares, money_cap):
     best_combination = []
     best_profit = 0
     it = 1
@@ -55,17 +62,30 @@ def find_best_investments(shares, money_cap):
     return best_combination, best_profit, it
 
 
+"""Creation of the user arguments"""
+# Create an ArgumentParser object
+parser = argparse.ArgumentParser()
+# Add arguments to the parser
+parser.add_argument("--in_file",
+                    help="Data file containing the shares",
+                    default="../data/demo_dataset.csv")
+parser.add_argument("--out_file",
+                    help="Output file in which the results will be written",
+                    default="../results/bruteforce_results.csv")
+# Parse the arguments
+args = parser.parse_args()
+
 """Extracting the data from the CSV file into a Python list."""
-file_path = "../data/v1/dataset.csv"
-shares = make_list_from_csv(file_path)
+share_list = make_list_from_csv(args.in_file)
+
 """Calling the algorithm on the shares list."""
 start_time = time.time()
-max_profit_combination, max_profit, nb_it = find_best_investments(shares, 500)
+max_profit_combination, max_profit, nb_it = brute_force_find_best_investments(share_list, 500)
 print("Analyse terminée. Temps d'exécution : {:.2f}s".format(time.time() - start_time))
 print(f"Nombre de combinaisons testées : {nb_it}")
-print(f"La meilleure combinaison permet un bénéfice de {max_profit}")
+print(f"La meilleure combinaison permet un bénéfice de {max_profit} pour un coût total "
+      f"de {sum(share['price'] for share in max_profit_combination)} euros")
 
 """Writing the results to a csv file"""
-outfile_path = "../results/v1/intertools.csv"
-create_csv_from_results(outfile_path, max_profit_combination, max_profit)
+create_csv_from_results(args.out_file, max_profit_combination, max_profit)
 

@@ -3,7 +3,7 @@ import time
 import heapq
 
 
-def make_list_from_csv(csv_file_path):
+def make_list_from_csv(csv_file_path, include_neg=False):
     data = []
     with open(csv_file_path, 'r') as csvfile:
         reader = csv.reader(csvfile, delimiter=',')
@@ -12,14 +12,20 @@ def make_list_from_csv(csv_file_path):
             if line_count == 0:
                 line_count += 1
             else:
+                line_count += 1
                 try:
                     price = float(row[1])
                     profit = float(row[2])
-                    if price > 0 and profit > 0:
-                        data.append({"name": row[0], "price": price, "profit": price*profit/100})
-                        line_count += 1
+                    if include_neg:
+                        if price != 0 and profit != 0:
+                            data.append({"name": row[0], "price": abs(price), "profit": abs(price) * abs(profit) / 100})
+                    else:
+                        if price > 0 and profit > 0:
+                            data.append({"name": row[0], "price": price, "profit": price*profit/100})
+
                 except ValueError:
                     pass
+    print(line_count-1)
     return data
 
 
@@ -86,8 +92,8 @@ def greedy_knapsack(items, money_cap):
 
 
 """Extracting the data from the CSV file into a Python list."""
-file_path = "../data/v2/dataset1.csv"
-shares = make_list_from_csv(file_path)
+file_path = "../../data/v2/dataset2.csv"
+shares = make_list_from_csv(file_path, include_neg=True)
 print(len(shares))
 # shares = sorted(shares, key=lambda x: x['profit'], reverse=True)
 
@@ -95,12 +101,12 @@ print(len(shares))
 start_time = time.time()
 max_profit, max_profit_combination = greedy_knapsack(shares, 500)
 print("Analyse terminée. Temps d'exécution : {:.2f}s".format(time.time() - start_time))
-print(f"La meilleure combinaison permet un bénéfice de {max_profit}")
+print(f"La meilleure combinaison permet un bénéfice de {max_profit} pour un coût total de {sum(share['price'] for share in max_profit_combination)}")
 
 
 
 """Writing the results to a csv file"""
 max_profit_combination = sorted(max_profit_combination, key=lambda x: x['name'], reverse=False)
-outfile_path = "../results/v2/greedy.csv"
+outfile_path = "../../results/v2/greedy_data2.csv"
 create_csv_from_results(outfile_path, max_profit_combination, max_profit)
 
