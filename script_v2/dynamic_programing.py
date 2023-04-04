@@ -49,8 +49,10 @@ def make_list_from_csv_multiply(csv_file_path, include_negative_numbers):
                                          "profit": int(profit*100*price*100)})
                     except ValueError:
                         pass
+    print()
     print(f"Données en entrée : {len(data)} actions ont été conservées "
           f"sur les {line_count - 1} présentes dans le fichier")
+    print()
     return data
 
 
@@ -133,11 +135,16 @@ shares = make_list_from_csv_multiply(args.in_file, args.include_neg)
 """Calling the algorithm on the shares list."""
 start_time = time.time()
 max_profit, max_profit_combination = dp_find_best_investments(shares, 50000)
-print("Analyse terminée. Temps d'exécution : {:.2f}s".format(time.time() - start_time))
+print("Analyse terminée. Temps d'exécution : {:.2f}s\n".format(time.time() - start_time))
+print()
 print(f"La meilleure combinaison permet un bénéfice de {max_profit/1000000} pour un "
-      f"coût total de {sum(share['price']/100 for share in max_profit_combination)} euros.")
+      f"coût total de {sum(share['price']/100 for share in max_profit_combination)} euros.\n")
+print()
+max_profit_combination = sorted(max_profit_combination, key=lambda x: x['name'], reverse=False)
+print("Les actions incluses dans cette combinaison sont :\n")
+for share in max_profit_combination:
+    print("{} - Prix : {:.2f}€ / Profits : {:.2f}€".format(share['name'], share['price'], share['profit']))
 
 """Writing the results to a csv file"""
-max_profit_combination = sorted(max_profit_combination, key=lambda x: x['name'], reverse=False)
 create_csv_from_results(args.out_file, max_profit_combination, max_profit)
 

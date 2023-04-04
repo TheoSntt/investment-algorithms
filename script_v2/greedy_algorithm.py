@@ -39,8 +39,10 @@ def make_list_from_csv(csv_file_path, include_negative_numbers):
 
                 except ValueError:
                     pass
+    print()
     print(f"Données en entrée : {len(data)} actions ont été conservées "
           f"sur les {line_count - 1} présentes dans le fichier")
+    print()
     return data
 
 
@@ -70,21 +72,21 @@ def create_csv_from_results(csv_file_path, best_combination, best_profit):
                          str(best_profit).replace(".", ",")])
 
 
-def ga_find_best_investments(items, money_cap):
+def ga_find_best_investments(share_list, money_cap):
     """ Greedy algorithm to approximate the solution to our investment problem. It sorts the shares based on their
     profit to price ratio and then buy them in that order (the most profitable first) until the money cap is reached.
     This algorithm is not guaranteed to find THE ONE optimal answer, but the margin of error is very small on our data.
     And it solves the problem is a logarithmic time : it runs on O(n log n).
     """
-    items = sorted(items, key=lambda x: x['profit'] / x['price'], reverse=True)
+    share_list = sorted(share_list, key=lambda x: x['profit'] / x['price'], reverse=True)
     total_profit = 0
     total_price = 0
     taken = []
-    for item in items:
-        if total_price + item['price'] <= money_cap:
-            taken.append(item)
-            total_profit += item['profit']
-            total_price += item['price']
+    for share in share_list:
+        if total_price + share['price'] <= money_cap:
+            taken.append(share)
+            total_profit += share['profit']
+            total_price += share['price']
     return total_profit, taken
 
 
@@ -111,10 +113,15 @@ shares = make_list_from_csv(args.in_file, args.include_neg)
 start_time = time.time()
 max_profit, max_profit_combination = ga_find_best_investments(shares, 500)
 print("Analyse terminée. Temps d'exécution : {:.2f}s".format(time.time() - start_time))
+print()
 print(f"La meilleure combinaison permet un bénéfice de {max_profit} pour un coût total "
       f"de {sum(share['price'] for share in max_profit_combination)}")
+max_profit_combination = sorted(max_profit_combination, key=lambda x: x['name'], reverse=False)
+print()
+print("Les actions incluses dans cette combinaison sont :")
+for share in max_profit_combination:
+    print("{} - Prix : {:.2f}€ / Profits : {:.2f}€".format(share['name'], share['price'], share['profit']))
 
 """Writing the results to a csv file"""
-max_profit_combination = sorted(max_profit_combination, key=lambda x: x['name'], reverse=False)
 create_csv_from_results(args.out_file, max_profit_combination, max_profit)
 

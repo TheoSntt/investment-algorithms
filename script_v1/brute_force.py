@@ -100,6 +100,9 @@ print("Analyse terminée. Temps d'exécution : {:.2f}s".format(time.time() - sta
 print(f"Nombre de combinaisons testées : {nb_it}")
 print(f"La meilleure combinaison permet un bénéfice de {max_profit} pour un coût total "
       f"de {sum(share['price'] for share in max_profit_combination)} euros")
+print("Les actions incluses dans cette combinaison sont :\n")
+for share in max_profit_combination:
+    print("{} - Prix : {:.2f}€ / Profits : {:.0f}%".format(share['name'], share['price'], share['profit']))
 
 """Writing the results to a csv file"""
 create_csv_from_results(args.out_file, max_profit_combination, max_profit)
