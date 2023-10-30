@@ -2,10 +2,12 @@
 # SCRIPTS D'AIDE A L'INVESTISSEMENT FINANCIER
 
 
-## Avertissements
+## Présentation du projet
 
 Ces scripts Python ont pour but de résoudre le problème d'algorithmie proposé par OpenClassrooms dans le cadre du projet 7 de la formation Développeur Python.
-Les scripts permettent de résoudre une variation du problème du sac à dos, où la solution d'investissement optimale doit être trouvée en prenant en compte les prix et les profits de différentex actions, dans la limite d'une somme maximum.
+Les scripts permettent de résoudre une variation du problème du sac à dos, où la solution d'investissement optimale doit être trouvée en prenant en compte les prix et les profits de différentex actions, dans la limite d'une somme maximum.  
+Le problème est donc, d'un point de vue logique, le même que le "knapsack problem". Les poids ont simplement été remplacés par des prix et les valeurs par des bénéfices.  
+Réaliser ces scripts m'a permis de me familiariser avec la notion de performance des algorithme, de complexité spatiale et temporelle. J'ai aussi eu l'occasion de découvrir les algorithmes de "dynamic programing" et d'en développer un.
 
 ## Mise en place et exécution des scripts
 
